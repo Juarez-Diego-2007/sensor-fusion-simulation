@@ -1,22 +1,42 @@
-#include "tasks.h"
+
 #include <iostream>
+#include "tasks.h"
+#include "sensor.h"
+#include "fusion.h"
 
-void taskConfigureSensors(Simulation& sim) {
-    (void)sim;
-    std::cout << "[T1] Configure sensors: not implemented yet.\n";
+using namespace std;
+
+// Task 1: Generate sensor readings
+void generateSensorReadings() {
+
+    double actualDistance = 100.0;
+
+    Sensor sensor1("Sensor 1", 2.0, 0.7);
+    Sensor sensor2("Sensor 2", 5.0, 0.3);
+
+    double reading1 = sensor1.generateReading(actualDistance);
+    double reading2 = sensor2.generateReading(actualDistance);
+
+    cout << "\nSensor 1: " << reading1 << " cm" << endl;
+    cout << "Sensor 2: " << reading2 << " cm" << endl;
 }
 
-void taskSetTruthAndSeed(Simulation& sim) {
-    (void)sim;
-    std::cout << "[T2] Set ground truth and seed: not implemented yet.\n";
-}
+// Task 2: Calculate fused estimate
+void calculateFusedEstimate() {
 
-void taskGenerateReadings(Simulation& sim) {
-    (void)sim;
-    std::cout << "[T3] Generate sensor readings: not implemented yet.\n";
-}
+    double actualDistance = 100.0;
 
-void taskRunFusion(Simulation& sim) {
-    (void)sim;
-    std::cout << "[T4] Run weighted-average fusion: not implemented yet.\n";
+    Sensor sensor1("Sensor 1", 2.0, 0.7);
+    Sensor sensor2("Sensor 2", 5.0, 0.3);
+
+    double reading1 = sensor1.generateReading(actualDistance);
+    double reading2 = sensor2.generateReading(actualDistance);
+
+    double fusedEstimate = FusionEngine::weightedAverage(
+        reading1, sensor1.getWeight(),
+        reading2, sensor2.getWeight()
+    );
+
+    cout << "\nFused Estimate: "
+         << fusedEstimate << " cm" << endl;
 }

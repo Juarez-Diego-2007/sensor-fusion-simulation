@@ -1,29 +1,36 @@
+
 #include "sensor.h"
-#include <iostream>
-#include <iomanip>
+#include <stdexcept>
+#include <random>
 
-Sensor::Sensor(const std::string& n, double noise, double w)
-    : name(n), noiseStdDev(noise), weight(w), outlierChance(0.0), failed(false) {}
+// Constructor
+Sensor::Sensor(string sensorName, double noise, double sensorWeight)
+    : name(sensorName),
+      noiseLevel(noise),
+      weight(sensorWeight),
+      generator(random_device{}()) {
 
-double Sensor::read(double trueValue, std::mt19937& rng) const {
-    // TODO (Diego): add Gaussian noise, occasional outliers, handle failure
-    (void)rng;
-    return trueValue;
+    if (noiseLevel < 0 || weight <= 0) {
+        throw invalid_argument("Noise must be nonnegative and weight must be positive.");
+    }
 }
 
-void Sensor::print() const {
-    std::cout << std::left << std::setw(12) << name
-              << " noise=" << noiseStdDev << " weight=" << weight
-              << " outlier=" << outlierChance
-              << (failed ? " [FAILED]" : "") << "\n";
+// Generate a simulated sensor reading
+double Sensor::generateReading(double actualDistance) {
+
+    normal_distribution<double> distribution(0.0, noiseLevel);
+
+    double randomNoise = distribution(generator);
+
+    return actualDistance + randomNoise;
 }
 
-const std::string& Sensor::getName() const { return name; }
-double Sensor::getNoise() const { return noiseStdDev; }
-double Sensor::getWeight() const { return weight; }
-double Sensor::getOutlierChance() const { return outlierChance; }
-bool Sensor::isFailed() const { return failed; }
-void Sensor::setNoise(double s) { noiseStdDev = s; }
-void Sensor::setWeight(double w) { weight = w; }
-void Sensor::setOutlierChance(double p) { outlierChance = p; }
-void Sensor::setFailed(bool f) { failed = f; }
+// Return sensor weight
+double Sensor::getWeight() const {
+    return weight;
+}
+
+// Return sensor name
+string Sensor::getName() const {
+    return name;
+}

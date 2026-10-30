@@ -1,8 +1,23 @@
-#include "fusion.h"
 
-double Fusion::weightedAverage(const std::vector<double>& readings,
-                               const std::vector<Sensor>& sensors) {
-    // TODO (Diego): implement weighted average
-    (void)sensors;
-    return readings.empty() ? 0.0 : readings[0];
+#include "fusion.h"
+#include <stdexcept>
+
+// Calculate weighted average of two sensor readings
+double FusionEngine::weightedAverage(
+    double reading1,
+    double weight1,
+    double reading2,
+    double weight2
+) {
+
+    if (weight1 < 0 || weight2 < 0 ||
+        weight1 + weight2 <= 0) {
+        throw std::invalid_argument("Invalid sensor weights.");
+    }
+
+    double fusedEstimate =
+        (reading1 * weight1 + reading2 * weight2)
+        / (weight1 + weight2);
+
+    return fusedEstimate;
 }
