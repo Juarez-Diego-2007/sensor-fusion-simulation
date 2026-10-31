@@ -1,11 +1,16 @@
-#pragma once
-#include <vector>
-#include "sensor.h"
 
-// Fusion algorithms (owner: Diego)
-class Fusion {
+#ifndef FUSION_H
+#define FUSION_H
+
+class FusionEngine {
 public:
-    // estimate = sum(w_i * r_i) / sum(w_i), skipping failed sensors
-    static double weightedAverage(const std::vector<double>& readings,
-                                  const std::vector<Sensor>& sensors);  // T4
+    // Calculate weighted average of two sensor readings
+    static double weightedAverage(
+        double reading1,
+        double weight1,
+        double reading2,
+        double weight2
+    );
 };
+
+#endif

@@ -1,30 +1,30 @@
-#pragma once
+
+#ifndef SENSOR_H
+#define SENSOR_H
+
 #include <string>
 #include <random>
 
-// One simulated sensor (owner: Diego)
+using namespace std;
+
 class Sensor {
-public:
-    Sensor(const std::string& name, double noiseStdDev, double weight);
-
-    double read(double trueValue, std::mt19937& rng) const;  // T3
-    void print() const;
-
-    const std::string& getName() const;
-    double getNoise() const;
-    double getWeight() const;
-    double getOutlierChance() const;
-    bool isFailed() const;
-
-    void setNoise(double stdDev);
-    void setWeight(double w);
-    void setOutlierChance(double p);
-    void setFailed(bool f);
-
 private:
-    std::string name;
-    double noiseStdDev;    // standard deviation of Gaussian noise
-    double weight;         // reliability weight used by fusion
-    double outlierChance;  // probability (0-1) of a large bad reading
-    bool failed;           // failed sensors are skipped by fusion
+    string name;
+    double noiseLevel;
+    double weight;
+
+    mt19937 generator;
+
+public:
+    // Constructor
+    Sensor(string sensorName, double noise, double sensorWeight);
+
+    // Generate a simulated sensor reading
+    double generateReading(double actualDistance);
+
+    // Get sensor information
+    double getWeight() const;
+    string getName() const;
 };
+
+#endif

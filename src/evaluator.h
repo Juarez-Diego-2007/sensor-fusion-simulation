@@ -1,20 +1,25 @@
-#pragma once
-#include <string>
-#include <vector>
-#include "simulation.h"
+#ifndef EVALUATOR_H
+#define EVALUATOR_H
 
-struct ErrorStats {
-    std::string name;      // sensor name or "Fused"
-    double meanAbsError;
-    double maxAbsError;
-    double rmse;
-};
+class Evaluation {
+private:
+    double sensor1Error;
+    double sensor2Error;
+    double fusedError;
 
-// Error analysis and reporting (owner: Anthony)
-class Evaluator {
 public:
-    void printResultsTable(const Simulation& sim) const;                 // T5
-    std::vector<ErrorStats> computeStats(const Simulation& sim) const;   // T6
-    void printComparison(const std::vector<ErrorStats>& stats) const;    // T6
-    bool exportCsv(const Simulation& sim, const std::string& file) const; // T8
+    // Constructor
+    Evaluation(double actualDistance,
+               double sensor1Reading,
+               double sensor2Reading,
+               double fusedEstimate);
+
+    // Calculate absolute error
+    static double absoluteError(double actual,
+                                double measured);
+
+    // Display and compare errors
+    void printReport() const;
 };
+
+#endif

@@ -1,46 +1,78 @@
+
 #include <iostream>
 #include <limits>
-#include "simulation.h"
 #include "tasks.h"
 
-static void printMenu() {
-    std::cout << "\n===== Sensor-Fusion Simulation =====\n"
-              << " 1. Configure sensors\n"
-              << " 2. Set ground truth and random seed\n"
-              << " 3. Generate sensor readings\n"
-              << " 4. Run weighted-average fusion\n"
-              << " 5. Show results table\n"
-              << " 6. Error metrics and comparison\n"
-              << " 7. Run test scenarios (low / high noise / outlier-failure)\n"
-              << " 8. Export results to CSV\n"
-              << " 0. Exit\n"
-              << "Choice: ";
-}
+using namespace std;
 
 int main() {
-    Simulation sim;
-    int choice = -1;
+    int choice;
+    bool running = true;
 
-    while (choice != 0) {
-        printMenu();
-        if (!(std::cin >> choice)) {
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cout << "Please enter a number.\n";
+    while (running) {
+
+        cout << "\n========== SENSOR-FUSION SYSTEM ==========\n";
+        cout << "1. Generate Sensor Readings\n";
+        cout << "2. Calculate Fused Estimate\n";
+        cout << "3. Calculate Estimation Errors\n";
+        cout << "4. Run Low-Noise Scenario\n";
+        cout << "5. Run High-Noise Scenario\n";
+        cout << "6. Run Outlier Scenario\n";
+        cout << "7. Display Simulation Results\n";
+        cout << "0. Exit Program\n";
+        cout << "==========================================\n";
+        cout << "Enter your choice: ";
+
+        if (!(cin >> choice)) {
+            if (cin.eof()) {
+                break;
+            }
+
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Invalid input. Please enter a number.\n";
             continue;
         }
+
         switch (choice) {
-            case 1: taskConfigureSensors(sim); break;
-            case 2: taskSetTruthAndSeed(sim);  break;
-            case 3: taskGenerateReadings(sim); break;
-            case 4: taskRunFusion(sim);        break;
-            case 5: taskShowResults(sim);      break;
-            case 6: taskErrorMetrics(sim);     break;
-            case 7: taskRunScenarios(sim);     break;
-            case 8: taskExportResults(sim);    break;
-            case 0: std::cout << "Goodbye.\n"; break;
-            default: std::cout << "Invalid option.\n";
+            case 1:
+                generateSensorReadings();
+                break;
+
+            case 2:
+                calculateFusedEstimate();
+                break;
+
+            case 3:
+                calculateEstimationErrors();
+                break;
+
+            case 4:
+                runLowNoiseScenario();
+                break;
+
+            case 5:
+                runHighNoiseScenario();
+                break;
+
+            case 6:
+                runOutlierScenario();
+                break;
+
+            case 7:
+                displaySimulationResults();
+                break;
+
+            case 0:
+                cout << "Exiting Sensor-Fusion System.\n";
+                running = false;
+                break;
+
+            default:
+                cout << "Invalid choice. Please try again.\n";
+                break;
         }
     }
+
     return 0;
 }

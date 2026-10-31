@@ -1,24 +1,65 @@
 #include "evaluator.h"
 #include <iostream>
+#include <iomanip>
+#include <cmath>
 
-void Evaluator::printResultsTable(const Simulation& sim) const {
-    // TODO (Anthony): print truth, each reading, fused, abs error per sample
-    (void)sim;
+using namespace std;
+
+// Constructor: calculate the errors for each estimate
+Evaluation::Evaluation(double actualDistance,
+                       double sensor1Reading,
+                       double sensor2Reading,
+                       double fusedEstimate) {
+
+    sensor1Error = absoluteError(actualDistance, sensor1Reading);
+    sensor2Error = absoluteError(actualDistance, sensor2Reading);
+    fusedError = absoluteError(actualDistance, fusedEstimate);
 }
 
-std::vector<ErrorStats> Evaluator::computeStats(const Simulation& sim) const {
-    // TODO (Anthony): MAE, max error, RMSE for each sensor and the fused estimate
-    (void)sim;
-    return {};
+// Calculate absolute error
+double Evaluation::absoluteError(double actual, double measured) {
+    return fabs(actual - measured);
 }
 
-void Evaluator::printComparison(const std::vector<ErrorStats>& stats) const {
-    // TODO (Anthony): print stats and whether fusion beat the best single sensor
-    (void)stats;
-}
+// Display and compare the errors
+void Evaluation::printReport() const {
 
-bool Evaluator::exportCsv(const Simulation& sim, const std::string& file) const {
-    // TODO (Anthony): write samples to a CSV file
-    (void)sim; (void)file;
-    return false;
+    cout << fixed << setprecision(2);
+
+    cout << "\n========== ERROR ANALYSIS ==========\n";
+
+    cout << "Sensor 1 Absolute Error: "
+         << sensor1Error << " cm\n";
+
+    cout << "Sensor 2 Absolute Error: "
+         << sensor2Error << " cm\n";
+
+    cout << "Fused Estimate Error: "
+         << fusedError << " cm\n";
+
+    cout << "\n========== ACCURACY COMPARISON ==========\n";
+
+    // Compare fusion with Sensor 1
+    if (fusedError < sensor1Error) {
+        cout << "Fusion is more accurate than Sensor 1.\n";
+    }
+    else if (fusedError > sensor1Error) {
+        cout << "Sensor 1 is more accurate than fusion.\n";
+    }
+    else {
+        cout << "Fusion and Sensor 1 have equal accuracy.\n";
+    }
+
+    // Compare fusion with Sensor 2
+    if (fusedError < sensor2Error) {
+        cout << "Fusion is more accurate than Sensor 2.\n";
+    }
+    else if (fusedError > sensor2Error) {
+        cout << "Sensor 2 is more accurate than fusion.\n";
+    }
+    else {
+        cout << "Fusion and Sensor 2 have equal accuracy.\n";
+    }
+
+    cout << "=====================================\n";
 }
