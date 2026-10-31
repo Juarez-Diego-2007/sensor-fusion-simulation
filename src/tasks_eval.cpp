@@ -3,25 +3,15 @@
 #include "evaluator.h"
 #include "sensor.h"
 #include "fusion.h"
+#include "simulation_state.h"
 #include <iostream>
 #include <iomanip>
 #include <string>
 
 using namespace std;
 
-// Store the results of the most recent simulation
-struct LastSimulation {
-    bool available = false;
-    string scenario;
-    double actualDistance = 0;
-    double reading1 = 0;
-    double reading2 = 0;
-    double fusedEstimate = 0;
-    double weight1 = 0;
-    double weight2 = 0;
-};
+LastSimulation lastSimulation;
 
-static LastSimulation lastSimulation;
 
 
 // ============================================
@@ -30,61 +20,44 @@ static LastSimulation lastSimulation;
 
 void calculateEstimationErrors() {
 
-    double actualDistance = 100.0;
+    if (!lastSimulation.available) {
+        cout << "\nNo sensor readings available.\n";
+        cout << "Please run option 1 first.\n";
+        return;
+    }
 
-    // Create two sensors with different noise levels
-    Sensor sensor1("Sensor 1", 2.0, 0.7);
-    Sensor sensor2("Sensor 2", 5.0, 0.3);
+    if (!lastSimulation.fusedAvailable) {
+        cout << "\nFused estimate has not been calculated.\n";
+        cout << "Please run option 2 first.\n";
+        return;
+    }
 
-    // Generate readings from the same actual distance
-    double reading1 = sensor1.generateReading(actualDistance);
-    double reading2 = sensor2.generateReading(actualDistance);
-
-    // Calculate the fused estimate
-    double fusedEstimate = FusionEngine::weightedAverage(
-        reading1, sensor1.getWeight(),
-        reading2, sensor2.getWeight()
-    );
-
-    // Save the results for option 7
-    lastSimulation = {
-        true,
-        "Estimation Errors",
-        actualDistance,
-        reading1,
-        reading2,
-        fusedEstimate,
-        sensor1.getWeight(),
-        sensor2.getWeight()
-    };
-
-    // Display simulation information
     cout << fixed << setprecision(2);
 
     cout << "\n========== ESTIMATION ERRORS ==========\n";
 
     cout << "Actual Distance: "
-         << actualDistance << " cm\n";
+         << lastSimulation.actualDistance << " cm\n";
 
     cout << "Sensor 1 Reading: "
-         << reading1 << " cm\n";
+         << lastSimulation.reading1 << " cm\n";
 
     cout << "Sensor 2 Reading: "
-         << reading2 << " cm\n";
+         << lastSimulation.reading2 << " cm\n";
 
     cout << "Fused Estimate: "
-         << fusedEstimate << " cm\n";
+         << lastSimulation.fusedEstimate << " cm\n";
 
-    // Calculate and compare errors
     Evaluation evaluation(
-        actualDistance,
-        reading1,
-        reading2,
-        fusedEstimate
+        lastSimulation.actualDistance,
+        lastSimulation.reading1,
+        lastSimulation.reading2,
+        lastSimulation.fusedEstimate
     );
 
     evaluation.printReport();
 }
+
 
 
 // ============================================
@@ -282,19 +255,16 @@ void runOutlierScenario() {
 }
 
 
+
 // ============================================
 // TASK 7: DISPLAY SIMULATION RESULTS
 // ============================================
 
 void displaySimulationResults() {
 
-    // Check whether a simulation has been run
     if (!lastSimulation.available) {
-
         cout << "\nNo simulation results available.\n";
-
-        cout << "Please run option 3, 4, 5, or 6 first.\n";
-
+        cout << "Please run a simulation first.\n";
         return;
     }
 
@@ -320,10 +290,15 @@ void displaySimulationResults() {
     cout << "Sensor 2 Weight: "
          << lastSimulation.weight2 << "\n";
 
+    if (!lastSimulation.fusedAvailable) {
+        cout << "\nFused estimate not calculated yet.\n";
+        cout << "Select option 2 to calculate it.\n";
+        return;
+    }
+
     cout << "Fused Estimate: "
          << lastSimulation.fusedEstimate << " cm\n";
 
-    // Calculate errors using the saved readings
     Evaluation evaluation(
         lastSimulation.actualDistance,
         lastSimulation.reading1,
@@ -333,3 +308,4 @@ void displaySimulationResults() {
 
     evaluation.printReport();
 }
+
